@@ -24,7 +24,7 @@ def filter_pair(pair):
     Returns True iff both sentences in a pair 'p' are under the MAX_LENGTH threshold
     '''
 
-    return len(pair[0].split(' ')) < config.MAX_LENGTH and len(pair[1].split(' ')) < config.MAX_LENGTH
+    return len(pair[0].split(' ')) <= config.MAX_LENGTH and len(pair[1].split(' ')) <= config.MAX_LENGTH
 
 # Using the functions defined above, return a populated voc object and pairs list
 def load_pairs(datafile):
@@ -51,8 +51,8 @@ def load_pairs(datafile):
             pairs.append([prev_line[1], line[1]])
 
     print(f'Read {len(pairs)} sentence pairs')
-    # pairs = [pair for pair in pairs if filter_pair(pair)]
-    # print("Trimmed to {!s} sentence pairs".format(len(pairs)))
+    pairs = [pair for pair in pairs if filter_pair(pair)]
+    print("Trimmed to {!s} sentence pairs".format(len(pairs)))
 
     return pairs
 
