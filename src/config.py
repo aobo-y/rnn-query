@@ -17,7 +17,7 @@ CORPUS = ['data/aol/' + file for file in [
 # checkpoints relevant
 SAVE_DIR = 'checkpoints'
 MODEL_NAME = 'default'
-SAVE_EVERY = 1000           # save the checkpoint every x iterations
+SAVE_EVERY = 5000           # save the checkpoint every x iterations
 
 # Iterations of training
 N_ITER = 150 * 10 ** 3
@@ -35,8 +35,6 @@ HIDDEN_SIZE = 300            # size of the word embedding & number of hidden uni
 WORD_EMBEDDING_SIZE = 300
 MODEL_LAYERS = 2
 MODEL_DROPOUT_RATE = 0.1
-ENCODER_N_LAYERS = 2         # number of layers in bi-GRU encoder
-DECODER_N_LAYERS = 2         # number of layers in GRU decoder
 ENCODER_DROPOUT_RATE = 0.1   # dropout rate in bi-GRU encoder
 DECODER_DROPOUT_RATE = 0.1   # dropout rate in GRU decoder
 TEACHER_FORCING_RATIO = 1.0  # ratio for training decoder on ground truth or last output of decoder
@@ -46,7 +44,7 @@ BATCH_SIZE = 64            # size of the mini batch in training state
 CLIP = 50.0                # gradient norm clip
 LR = 0.0001                # encoder learning ratio
 DECODER_LR = 5.0           # decoder learning ratio: LR*DECODER_LR
-PRINT_EVERY = 100          # print the loss every x iterations
+PRINT_EVERY = 500          # print the loss every x iterations
 TF_RATE_DECAY_FACTOR = 15 * 10 ** 3      # k in the inverse sigmoid decay func of the teacher force rate k/(k+exp(i/k)), which is related to N_ITER
 
 # Parameters for processing the dataset

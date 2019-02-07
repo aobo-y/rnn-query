@@ -90,6 +90,10 @@ def main():
 
     print('size of the data:', len(voc))
 
+    for (k, v) in voc.items():
+        if v < 3:
+            voc.pop(k)
+
     filtered_line = []
     with open(WE_FILE, 'r', encoding='utf8') as file:
         # emdedding file is too large, read line by line
