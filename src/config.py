@@ -3,15 +3,15 @@
 # Corpus, path relateds to /src
 CORPUS = ['data/aol/' + file for file in [
     'user-ct-test-collection-01.txt',
-    # 'user-ct-test-collection-02.txt',
-    # 'user-ct-test-collection-03.txt',
-    # 'user-ct-test-collection-04.txt',
-    # 'user-ct-test-collection-05.txt',
-    # 'user-ct-test-collection-06.txt',
-    # 'user-ct-test-collection-07.txt',
-    # 'user-ct-test-collection-08.txt',
-    # 'user-ct-test-collection-09.txt',
-    # 'user-ct-test-collection-10.txt'
+    'user-ct-test-collection-02.txt',
+    'user-ct-test-collection-03.txt',
+    'user-ct-test-collection-04.txt',
+    'user-ct-test-collection-05.txt',
+    'user-ct-test-collection-06.txt',
+    'user-ct-test-collection-07.txt',
+    'user-ct-test-collection-08.txt',
+    'user-ct-test-collection-09.txt',
+    'user-ct-test-collection-10.txt'
 ]]
 
 # checkpoints relevant
@@ -56,5 +56,5 @@ MAX_LENGTH = 20  # Maximum sentence length to consider
 # Word Embedding
 WORD_EMBEDDING_FILES = [
     'data/word_embedding/filtered.glove.42B.300d.part1.txt',
-    # 'data/word_embedding/filtered.glove.42B.300d.part2.txt'
+    'data/word_embedding/filtered.glove.42B.300d.part2.txt'
 ]
