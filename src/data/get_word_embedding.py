@@ -19,37 +19,17 @@ ZIP_FILE = os.path.join(WE_FOLDER, 'glove.42B.300d.zip')
 WE_FILE = os.path.join(WE_FOLDER, 'glove.42B.300d.txt')
 # WE_FILE = os.path.join(WE_FOLDER, 'glove.6B.300d.txt')
 
+EMBEDDING_SIZE = 300
+
 CORPUS_FILES = [
-    os.path.join(DIR_PATH, 'aol', file) for file in [
-        'user-ct-test-collection-01.txt',
-        'user-ct-test-collection-02.txt',
-        'user-ct-test-collection-03.txt',
-        'user-ct-test-collection-04.txt',
-        'user-ct-test-collection-05.txt',
-        'user-ct-test-collection-06.txt',
-        'user-ct-test-collection-07.txt',
-        'user-ct-test-collection-08.txt',
-        'user-ct-test-collection-09.txt',
-        'user-ct-test-collection-10.txt'
+    os.path.join(DIR_PATH, file) for file in [
+        'aol_fmt.txt'
     ]
 ]
 
 OUTPUT_FILES = [
-    os.path.join(WE_FOLDER, 'filtered.glove.42B.300d.part1.txt'),
-    os.path.join(WE_FOLDER, 'filtered.glove.42B.300d.part2.txt')
+    os.path.join(WE_FOLDER, 'filtered.glove.42B.300d.txt')
 ]
-
-# same as data util, better import from somewhere
-def normalize_str(s):
-    s = s.lower()
-    # give a leading & ending spaces to punctuations
-    s = re.sub(r'([.!?,\'])', r' \1 ', s)
-    # purge unrecognized token with space
-    s = re.sub(r'[^a-z.!?,\']+', r' ', s)
-    # squeeze multiple spaces
-    s = re.sub(r'([ ]+)', r' ', s)
-    # remove extra leading & ending space
-    return s.strip()
 
 def main():
     if not os.path.exists(WE_FOLDER):
@@ -68,57 +48,65 @@ def main():
         os.remove(ZIP_FILE)
 
     voc = {}
-
     for corpus_file in CORPUS_FILES:
         print('read corpus:', corpus_file)
 
         with open(corpus_file, 'r', encoding='utf8') as file:
             lines = file.read().strip().split('\n')
             # first line is header
-            for line in lines[1:]:
+            for line in lines:
                 parts = line.split('\t')
-                sentence = parts[1]
+                tokens = parts[1].split(' ')
 
-                sentence = normalize_str(sentence)
-                if sentence == '':
-                    continue
-
-                for token in sentence.split(' '):
+                for token in tokens:
                     if token not in voc:
                         voc[token] = 0
                     voc[token] += 1
 
-    print('size of the data:', len(voc))
+    print('size of the voc:', len(voc))
 
-    for (k, v) in voc.items():
-        if v < 3:
-            voc.pop(k)
+    voc = sorted(voc.items(), key=lambda i: i[1], reverse=True)
 
-    filtered_line = []
+    voc_size = 10 ** 5
+    voc = voc[:voc_size]
+    print('trim voc to the size of:', len(voc))
+    print('minimum freq in voc:', voc[-1][1])
+
+    default_ebd = ' '.join(['0.0'] * EMBEDDING_SIZE)
+    we = {t[0]: default_ebd for t in voc}
+
+    # unknown
+    we['<unk>'] = default_ebd
+
     with open(WE_FILE, 'r', encoding='utf8') as file:
         # emdedding file is too large, read line by line
         size = 0
-        line = file.readline()
+        line = file.readline().rstrip('\n')
+        i = 1
         while line:
-            size += 1
+            space_idx = line.find(' ')
 
-            token = line[: line.find(' ')]
-            if token in voc or token == '<unk>':
-                filtered_line.append(line)
+            token = line[: space_idx]
 
-            line = file.readline()
+            if token in we:
+                size += 1
+                we[token] = line[space_idx + 1:]
 
-        print('size of the embedding:', size)
+            if i % 50000 == 0:
+                print('read word embedding lines:', i)
 
-    print('size of the filtered embedding:', len(filtered_line))
+            line = file.readline().rstrip('\n')
+            i += 1
+
+        print('size of the mapped embedding:', size)
+
+    lines = [k + ' ' + v for k, v in we.items()]
 
     # embedding is too big to commit
-    splited_lines = np.array_split(filtered_line, len(OUTPUT_FILES))
+    splited_lines = np.array_split(lines, len(OUTPUT_FILES))
     for lines, output_file in zip(splited_lines, OUTPUT_FILES):
         with open(output_file, 'w', encoding='utf8') as file:
-            # remove last line's newline
-            lines[-1] = lines[-1].rstrip('\n')
-            file.write(''.join(lines))
+            file.write('\n'.join(lines))
 
 
 if __name__ == '__main__':
