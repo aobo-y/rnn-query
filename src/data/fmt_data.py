@@ -3,11 +3,12 @@ format the aol data to consume by the model
 '''
 
 import os
+import random
+import math
 from datetime import datetime
 from nltk.tokenize import RegexpTokenizer
 
 DIR_PATH = os.path.dirname(__file__)
-output_file = os.path.join(DIR_PATH, 'aol_fmt.txt')
 
 tokenizer = RegexpTokenizer('[a-z0-9]+', discard_empty=True)
 
@@ -91,14 +92,31 @@ def main():
 
     print('size of sessions:', len(sessions))
 
-    lines = []
-    for i, session in enumerate(sessions):
-        lines += [str(i) + '\t' + s for s in session.sentences]
+    test_size = math.floor(len(sessions) * 0.15)
 
-    print('size of queries:', len(lines))
+    random.shuffle(sessions)
+    dev_sessions = sessions[-test_size:]
+    sessions = sessions[:-test_size]
+    test_sessions = sessions[-test_size:]
+    sessions = sessions[:-test_size]
 
-    with open(output_file, 'w', encoding='utf8') as file:
-        file.write('\n'.join(lines))
+    data_map = {
+        'train': sessions,
+        'dev': dev_sessions,
+        'test': test_sessions
+    }
+
+    for name, data in data_map.items():
+        print(f'size of {name} sessions:', len(data))
+
+        lines = []
+        for i, session in enumerate(data):
+            lines += [str(i) + '\t' + s for s in session.sentences]
+
+        print(f'size of {name} queries:', len(lines))
+
+        with open(os.path.join(DIR_PATH, 'aol', 'aol_fmt_' + name + '.txt'), 'w', encoding='utf8') as file:
+            file.write('\n'.join(lines))
 
 if __name__ == '__main__':
     main()

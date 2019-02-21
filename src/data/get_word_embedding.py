@@ -22,8 +22,8 @@ WE_FILE = os.path.join(WE_FOLDER, 'glove.42B.300d.txt')
 EMBEDDING_SIZE = 300
 
 CORPUS_FILES = [
-    os.path.join(DIR_PATH, file) for file in [
-        'aol_fmt.txt'
+    os.path.join(DIR_PATH, 'aol', file) for file in [
+        'aol_fmt_train.txt'
     ]
 ]
 
